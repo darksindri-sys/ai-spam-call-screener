@@ -1,0 +1,190 @@
+Phase 1: Environment Setup
+1.1 Create a New Conda Environment
+
+Open Anaconda Prompt and run:
+
+conda create -n spam-blocker python=3.11
+conda activate spam-blocker
+
+1.2 Install Required Libraries
+pip install fastapi uvicorn twilio openai python-dotenv pydantic
+
+Phase 2: Twilio Account (Call Handling Service)
+2.1 Register on Twilio
+
+Go to: https://www.twilio.com
+
+Create a free account (you will receive trial credit)
+
+Verify your phone number
+
+2.2 Get Your Credentials
+
+From the Twilio dashboard:
+
+Copy your Account SID
+
+Copy your Auth Token
+
+Purchase a Twilio phone number (using free credit) that supports voice calls
+
+2.3 Configure ngrok (Expose Local Server)
+
+Twilio needs a public URL to send data. Use ngrok:
+
+Download ngrok from: https://ngrok.com
+
+Register and obtain your auth token
+
+Install ngrok
+
+Phase 3: Create the Code
+3.1 Project Structure
+
+Create a project folder:
+
+spam-blocker/
+├── .env
+├── main.py
+├── ai_handler.py
+└── requirements.txt
+
+3.2 .env File (Credentials)
+
+Create a .env file inside the project folder:
+
+TWILIO_ACCOUNT_SID=your_account_sid
+TWILIO_AUTH_TOKEN=your_auth_token
+TWILIO_PHONE_NUMBER=+1234567890
+OPENAI_API_KEY=your_openai_key
+
+
+Note: You also need an OpenAI API key. Go to https://platform.openai.com
+ and create one (they provide free credits to start).
+
+3.3 Main Code
+
+(Implementation goes here)
+
+Phase 4: Run and Test
+4.1 Start the Server
+
+In Anaconda Prompt:
+
+conda activate spam-blocker
+cd path/to/your/folder
+python main.py
+
+
+You should see:
+
+Starting Spam Blocker server...
+
+4.2 Expose Server with ngrok
+
+Open a new Anaconda Prompt and start ngrok:
+
+ngrok http 8000
+
+
+Ngrok will provide a URL like:
+
+https://abc123.ngrok.io
+
+
+Copy this URL.
+
+4.3 Configure Twilio
+
+Go to the Twilio Dashboard:
+
+Go to Phone Numbers → Select your number
+
+Under Voice Configuration:
+
+A CALL COMES IN: Webhook
+
+Paste:
+
+https://your-ngrok-url.ngrok.io/voice/incoming
+
+
+Method:
+
+HTTP POST
+
+
+Click Save.
+
+Phase 5: TEST!
+5.1 Forward Your Phone Number
+
+On your smartphone:
+
+Android:
+
+Settings → Calls → Call Forwarding → Always Forward → Enter your Twilio number
+
+iPhone:
+
+Settings → Phone → Call Forwarding → Enter your Twilio number
+
+5.2 Make a Test Call
+
+Ask a friend to call you and say something like:
+
+"Hi, I'm Marco, I'm calling about the free insurance you won!"
+"Good morning, I would like to offer you a new electricity plan"
+
+Watch what happens in the terminal where the server is running.
+
+Phase 6: Monitoring
+
+While the server is running, you can view saved conversations at:
+
+http://localhost:8000/conversations
+
+What the System Does
+
+Receives the call and answers: "Hello, who is calling?"
+
+Listens to the caller (Twilio Speech-to-Text)
+
+Analyzes with GPT if it is spam (score from 0–10)
+
+Responds intelligently:
+
+Behavior:
+
+High spam (7–10): immediately hangs up
+
+Suspicious (4–6): wastes the caller’s time
+
+Legitimate (0–3): polite and helpful
+
+Continues the conversation as needed
+
+Possible Future Improvements
+
+Add a database (SQLite) to store calls
+
+Trusted number whitelist
+
+Web dashboard for statistics
+
+Notifications when legitimate calls arrive
+
+Improve AI responses with specific examples
+
+Important Notes
+Costs:
+
+Twilio: charges per call minute (~$0.013/min). Free credit allows many tests
+
+OpenAI: free credits available initially, then about ~$0.0001 per call using GPT-4o-mini
+
+Ngrok:
+
+Free version changes the URL every restart
+
+You must update the Twilio webhook every time
